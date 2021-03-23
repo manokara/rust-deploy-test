@@ -21,7 +21,8 @@ jobs:
           args: --release
   release:
     name: Make release
-    needs: [linux, mac, windows]
+    needs: [build]
+    runs-on: ubuntu-latest
     steps:
       - name: Prepare files
         if: false
