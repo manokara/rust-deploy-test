@@ -1,12 +1,9 @@
 on: push
 name: Deploy
 jobs:
-  build:
-    name: Build
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+  build_linux:
+    name: Build Linux x86_64
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -19,18 +16,81 @@ jobs:
         with:
           command: build
           args: --release
+      - name: Upload artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: linux64.bin
+          path: target/rust-deploy-test
+  build_mac:
+    name: Build macOS x86_64
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release
+      - name: Upload artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: macos.bin
+          path: target/rust-deploy-test
+  build_win:
+    name: Build Windows x64
+    runs-on: windowsw-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release
+      - name: Upload artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: windows.bin
+          path: target/rust-deploy-test.exe
   release:
     name: Make release
-    needs: [build]
+    needs: [build_linux, build_mac, build_win]
     runs-on: ubuntu-latest
     steps:
-      - name: Prepare files
-        shell: bash
+      - name: Setup folders
+        run: mkdir dist_linux dist_mac dist_windows
+      - name: Get Linux build
+        uses: actions/download-artifact@v1
+        with:
+          name: linux64.bin
+          path: dist_linux/rust-deploy-test
+      - name: Get Mac build
+        uses: actions/download-artifact@v1
+        with:
+          name: macos.bin
+          path: dist_mac/rust-deploy-test
+      - name: Get Windows build
+        uses: actions/download-artifact@v1
+        with:
+          name: windows.bin
+          path: dist_windows/rust-deploy-test.exe
+      - name: Prepare archives
         run: |
-          mkdir dist
-          cd dist
-          cp ../target/release/rust-deploy-test* .
-          #cp -r ../assets .
+          tar -C dist_linux -Jxvf rust-deploy-test.linux.tar.bz2 .
+          tar -C dist_mac -Jxvf rust-deploy-test.macos.tar.bz2 .
+          cd dist_windows
+          zip -r ../rust-deploy-test.windows.zip .
+          cd ..
+
           ls
       - name: Release
         if: false
