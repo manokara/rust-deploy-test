@@ -85,8 +85,8 @@ jobs:
           path: dist_windows/rust-deploy-test.exe
       - name: Prepare archives
         run: |
-          tar -C dist_linux -Jxvf rust-deploy-test.linux.tar.bz2 .
-          tar -C dist_mac -Jxvf rust-deploy-test.macos.tar.bz2 .
+          tar -C dist_linux -Jcvf rust-deploy-test.linux.tar.bz2 .
+          tar -C dist_mac -Jcvf rust-deploy-test.macos.tar.bz2 .
           cd dist_windows
           zip -r ../rust-deploy-test.windows.zip .
           cd ..
