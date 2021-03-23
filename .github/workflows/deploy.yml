@@ -16,16 +16,11 @@ jobs:
         with:
           command: build
           args: --release
-      - name: Pwd ls
-        run: |
-          pwd
-          ls
-          ls target
       - name: Upload artifact
         uses: actions/upload-artifact@v1
         with:
           name: linux64.bin
-          path: target/rust-deploy-test
+          path: target/release/rust-deploy-test
   build_mac:
     name: Build macOS x86_64
     runs-on: macos-latest
@@ -45,10 +40,10 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: macos.bin
-          path: target/rust-deploy-test
+          path: target/release/rust-deploy-test
   build_win:
     name: Build Windows x64
-    runs-on: windowsw-latest
+    runs-on: windows-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -65,7 +60,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: windows.bin
-          path: target/rust-deploy-test.exe
+          path: target/release/rust-deploy-test.exe
   release:
     name: Make release
     needs: [build_linux, build_mac, build_win]
