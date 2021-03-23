@@ -1,39 +1,44 @@
 on: push
 name: Deploy
 jobs:
-  linux:
-    name: Linux 64-bits
-    runs-on: ubuntu-latest
+  build:
+    name: Build
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set Rust toolchain
+        uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-      - uses: actions-rs/cargo@v1
+      - name: Build
+        uses: actions-rs/cargo@v1
         with:
           command: build
           args: --release
-  mac:
-    name: macOS
-    runs-on: mac-latest
+  release:
+    name: Make release
+    needs: [linux, mac, windows]
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-      - uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release
-  windows:
-    name: Windows 64-bits
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-      - uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release
+      - name: Prepare files
+        if: false
+        #if: runner.os != "Windows"
+        run: |
+          mkdir dist
+          cd dist
+          cp ../target/release/rust-deploy-test .
+          cp -r ../assets .
+      - name: Prepare files
+        if: false
+        #if: runner.os == "Windows"
+        run: |
+          mkdir dist
+          cd dist
+          copy ..\target\release\rust-deploy-test.exe .
+          copy ..\assets .
+      - name: Release
+        if: false
+        uses: softprops/action-gh-release@v1
