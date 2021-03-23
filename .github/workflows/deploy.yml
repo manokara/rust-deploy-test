@@ -25,21 +25,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Prepare files
-        if: false
-        #if: runner.os != "Windows"
+        shell: bash
         run: |
           mkdir dist
           cd dist
-          cp ../target/release/rust-deploy-test .
-          cp -r ../assets .
-      - name: Prepare files
-        if: false
-        #if: runner.os == "Windows"
-        run: |
-          mkdir dist
-          cd dist
-          copy ..\target\release\rust-deploy-test.exe .
-          copy ..\assets .
+          cp ../target/release/rust-deploy-test* .
+          #cp -r ../assets .
+          ls
       - name: Release
         if: false
         uses: softprops/action-gh-release@v1
