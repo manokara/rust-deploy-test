@@ -4,6 +4,8 @@ jobs:
   build_linux:
     name: Build Linux x86_64
     runs-on: ubuntu-latest
+    outputs:
+      sha7: ${{ steps.sha7.sha7 }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -24,6 +26,10 @@ jobs:
         with:
           name: linux64.bin
           path: target/release/rust-deploy-test
+      - name: Export SHA7
+        id: sha7
+        run: |
+          echo ::set-output name=sha7::$(git rev-parse --short HEAD)
   build_mac:
     name: Build macOS x86_64
     runs-on: macos-latest
@@ -97,7 +103,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: ${{ github.ref == 'refs/heads/main' }}
         with:
-          name: Latest commit
+          name: Latest commit (${{needs.build_linux.outputs.sha7}})
           tag_name: latest
           prerelease: true
           files: |
