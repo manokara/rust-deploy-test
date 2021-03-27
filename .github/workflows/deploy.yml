@@ -16,6 +16,9 @@ jobs:
         with:
           command: build
           args: --release
+      - name: Strip binary
+        run: |
+          strip target/release/rust-deploy-test
       - name: Upload artifact
         uses: actions/upload-artifact@v1
         with:
@@ -70,17 +73,17 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: linux64.bin
-          path: dist_linux/rust-deploy-test
+          path: dist_linux
       - name: Get Mac build
         uses: actions/download-artifact@v1
         with:
           name: macos.bin
-          path: dist_mac/rust-deploy-test
+          path: dist_mac
       - name: Get Windows build
         uses: actions/download-artifact@v1
         with:
           name: windows.bin
-          path: dist_windows/rust-deploy-test.exe
+          path: dist_windows
       - name: Prepare archives
         run: |
           tar -C dist_linux -Jcvf rust-deploy-test.linux.tar.bz2 .
@@ -90,10 +93,11 @@ jobs:
           cd ..
 
           ls
-      - name: Release main
+      - name: Release latest
         uses: softprops/action-gh-release@v1
         if: ${{ github.ref == 'refs/heads/main' }}
         with:
+          name: Latest commit
           tag_name: latest
           prerelease: true
           files: |
