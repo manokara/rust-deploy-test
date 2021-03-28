@@ -63,7 +63,7 @@ jobs:
           Invoke-WebRequest -Uri https://www.libsdl.org/release/SDL2-2.0.14-win32-x64.zip -OutFile SDL2.zip
           Expand-Archive -LiteralPath SDL2.zip -DestinationPath .\temp
           cp temp\SDL2*\lib\x64\SDL2.* .\
-          Remove-Item -Recursive -Force temp
+          Remove-Item -Recurse -Force temp
       - name: Checkout
         uses: actions/checkout@v2
       - name: Copy SDL2 to project root
