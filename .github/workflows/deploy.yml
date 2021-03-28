@@ -39,6 +39,9 @@ jobs:
         with:
           command: build
           args: --release
+      - name: Strip binary
+        run: |
+          strip target/release/rust-deploy-test
       - name: Upload artifact
         uses: actions/upload-artifact@v1
         with:
@@ -107,7 +110,7 @@ jobs:
           name: Latest
           tag_name: latest
           prerelease: true
-          body: Bleeding edge stuff!
+          body: Bleeding edge stuff! Use at your own risk!
           files: |
             rust-deploy-test.linux.tar.bz2
             rust-deploy-test.macos.tar.bz2
