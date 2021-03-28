@@ -62,7 +62,7 @@ jobs:
       - name: Get SDL2
         run: |
           mkdir temp
-          Invoke-WebRequest -Uri https://www.libsdl.org/release/SDL2-2.0.14-win32-x64.zip -OutFile SDL2.zip
+          Invoke-WebRequest -Uri https://www.libsdl.org/release/SDL2-devel-2.0.14-VC.zip -OutFile SDL2.zip
           Expand-Archive -LiteralPath SDL2.zip -DestinationPath .\temp
           dir temp
           cp temp\SDL2*\lib\x64\SDL2.* .\
