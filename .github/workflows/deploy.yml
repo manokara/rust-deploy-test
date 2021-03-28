@@ -64,7 +64,10 @@ jobs:
           mkdir temp
           Invoke-WebRequest -Uri https://www.libsdl.org/release/SDL2-2.0.14-win32-x64.zip -OutFile SDL2.zip
           Expand-Archive -LiteralPath SDL2.zip -DestinationPath .\temp
+          dir temp
           cp temp\SDL2*\lib\x64\SDL2.* .\
+          dir
+          ls
           Remove-Item -Recurse -Force temp
       - name: Checkout
         uses: actions/checkout@v2
@@ -78,9 +81,13 @@ jobs:
           toolchain: stable
       - name: Build
         uses: actions-rs/cargo@v1
+        if: false
         with:
           command: build
           args: --release
+      - name: Fail
+        run: |
+          asdfjkl
       - name: Upload binary
         uses: actions/upload-artifact@v1
         with:
