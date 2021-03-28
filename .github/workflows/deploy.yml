@@ -4,8 +4,6 @@ jobs:
   build_linux:
     name: Build Linux x86_64
     runs-on: ubuntu-latest
-    outputs:
-      sha7: ${{ steps.sha7.sha7 }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -26,10 +24,6 @@ jobs:
         with:
           name: linux64.bin
           path: target/release/rust-deploy-test
-      - name: Export SHA7
-        id: sha7
-        run: |
-          echo ::set-output name=sha7::$(git rev-parse --short HEAD)
   build_mac:
     name: Build macOS x86_64
     runs-on: macos-latest
@@ -99,13 +93,21 @@ jobs:
           cd ..
 
           ls
+      - name: Delete latest release
+        uses: author/action-rollback@stable
+        if: ${{ github.ref == 'refs/heads/main' }}
+        with:
+          tag: latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Release latest
         uses: softprops/action-gh-release@v1
         if: ${{ github.ref == 'refs/heads/main' }}
         with:
-          name: Latest commit (${{needs.build_linux.outputs.sha7}})
+          name: Latest
           tag_name: latest
           prerelease: true
+          body: Bleeding edge stuff!
           files: |
             rust-deploy-test.linux.tar.bz2
             rust-deploy-test.macos.tar.bz2
