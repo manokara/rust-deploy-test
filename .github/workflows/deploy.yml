@@ -4,6 +4,7 @@ jobs:
   build_linux:
     name: Build Linux x86_64
     runs-on: ubuntu-latest
+    if: false
     steps:
       - name: Install packages
         run: |
@@ -30,6 +31,7 @@ jobs:
   build_mac:
     name: Build macOS x86_64
     runs-on: macos-latest
+    if: false
     steps:
       - name: Install packages
         run: |
@@ -69,6 +71,7 @@ jobs:
       - name: Copy SDL2 to project root
         run: |
           cp ..\SDL2* .\
+          ls
       - name: Set Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
