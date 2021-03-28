@@ -7,7 +7,7 @@ jobs:
     steps:
       - name: Install packages
         run: |
-          sudo apt install -y libasound1-dev libsdl2-dev
+          sudo apt install -y libasound2-dev libsdl2-dev
       - name: Checkout
         uses: actions/checkout@v2
       - name: Set Rust toolchain
@@ -60,13 +60,10 @@ jobs:
       - name: Get SDL2
         run: |
           mkdir temp
-          wget -O temp/SDL2.zip https://www.libsdl.org/release/SDL2-2.0.14-win32-x64.zip
-          cd temp
-          unzip SDL2.zip
-          cd ..
-          cp temp/SDL2*/lib/x64/SDL2.{lib,dll} .
-          rm -rf temp
-        shell: bash
+          Invoke-WebRequest -Uri https://www.libsdl.org/release/SDL2-2.0.14-win32-x64.zip -OutFile SDL2.zip
+          Expand-Archive -LiteralPath SDL2.zip -DestinationPath .\temp
+          cp temp\SDL2*\lib\x64\SDL2.* .\
+          Remove-Item -Recursive -Force temp
       - name: Checkout
         uses: actions/checkout@v2
       - name: Copy SDL2 to project root
