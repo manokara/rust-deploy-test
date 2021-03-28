@@ -59,22 +59,17 @@ jobs:
     name: Build Windows x64
     runs-on: windows-latest
     steps:
-      - name: Get SDL2
-        run: |
-          mkdir temp
-          Invoke-WebRequest -Uri https://www.libsdl.org/release/SDL2-devel-2.0.14-VC.zip -OutFile SDL2.zip
-          Expand-Archive -LiteralPath SDL2.zip -DestinationPath .\temp
-          dir temp
-          cp temp\SDL2*\lib\x64\SDL2.* .\
-          dir
-          ls
-          Remove-Item -Recurse -Force temp
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Copy SDL2 to project root
+      - name: Get SDL2
         run: |
-          cp ..\SDL2* .\
-          ls
+          mkdir download
+          Invoke-WebRequest -Uri https://www.libsdl.org/release/SDL2-devel-2.0.14-VC.zip -OutFile download\SDL2.zip
+          Expand-Archive -LiteralPath download\SDL2.zip -DestinationPath .\download
+          cp download\SDL2*\lib\x64\SDL2.* .\
+          Remove-Item -Recurse -Force download
+          Remove-Item -Recurse -Force download
+          dir
       - name: Set Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
