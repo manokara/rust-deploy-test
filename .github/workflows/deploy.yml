@@ -4,7 +4,6 @@ jobs:
   build_linux:
     name: Build Linux x86_64
     runs-on: ubuntu-latest
-    if: false
     steps:
       - name: Install packages
         run: |
@@ -31,7 +30,6 @@ jobs:
   build_mac:
     name: Build macOS x86_64
     runs-on: macos-latest
-    if: false
     steps:
       - name: Install packages
         run: |
@@ -68,21 +66,15 @@ jobs:
           Expand-Archive -LiteralPath download\SDL2.zip -DestinationPath .\download
           cp download\SDL2*\lib\x64\SDL2.* .\
           Remove-Item -Recurse -Force download
-          Remove-Item -Recurse -Force download
-          dir
       - name: Set Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
       - name: Build
         uses: actions-rs/cargo@v1
-        if: false
         with:
           command: build
           args: --release
-      - name: Fail
-        run: |
-          asdfjkl
       - name: Upload binary
         uses: actions/upload-artifact@v1
         with:
