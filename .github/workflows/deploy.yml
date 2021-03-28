@@ -5,6 +5,9 @@ jobs:
     name: Build Linux x86_64
     runs-on: ubuntu-latest
     steps:
+      - name: Install packages
+        run: |
+          sudo apt install -y libasound1-dev libsdl2-dev
       - name: Checkout
         uses: actions/checkout@v2
       - name: Set Rust toolchain
@@ -19,7 +22,7 @@ jobs:
       - name: Strip binary
         run: |
           strip target/release/rust-deploy-test
-      - name: Upload artifact
+      - name: Upload binary
         uses: actions/upload-artifact@v1
         with:
           name: linux64.bin
@@ -28,6 +31,9 @@ jobs:
     name: Build macOS x86_64
     runs-on: macos-latest
     steps:
+      - name: Install packages
+        run: |
+          brew install sdl2
       - name: Checkout
         uses: actions/checkout@v2
       - name: Set Rust toolchain
@@ -42,7 +48,7 @@ jobs:
       - name: Strip binary
         run: |
           strip target/release/rust-deploy-test
-      - name: Upload artifact
+      - name: Upload binary
         uses: actions/upload-artifact@v1
         with:
           name: macos.bin
@@ -51,8 +57,21 @@ jobs:
     name: Build Windows x64
     runs-on: windows-latest
     steps:
+      - name: Get SDL2
+        run: |
+          mkdir temp
+          wget -O temp/SDL2.zip https://www.libsdl.org/release/SDL2-2.0.14-win32-x64.zip
+          cd temp
+          unzip SDL2.zip
+          cd ..
+          cp temp/SDL2*/lib/x64/SDL2.{lib,dll} .
+          rm -rf temp
+        shell: bash
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Copy SDL2 to project root
+        run: |
+          cp ..\SDL2* .\
       - name: Set Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -62,11 +81,16 @@ jobs:
         with:
           command: build
           args: --release
-      - name: Upload artifact
+      - name: Upload binary
         uses: actions/upload-artifact@v1
         with:
           name: windows.bin
           path: target/release/rust-deploy-test.exe
+      - name: Upload SDL2
+        uses: actions/upload-artifact@v1
+        with:
+          name: SDL2.dll
+          path: SDL2.dll
   release:
     name: Make release
     needs: [build_linux, build_mac, build_win]
@@ -90,6 +114,11 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: windows.bin
+          path: dist_windows
+      - name: Get SDL dll
+        uses: actions/download-artifact@v1
+        with:
+          name: SDL2.dll
           path: dist_windows
       - name: Prepare archives
         run: |
