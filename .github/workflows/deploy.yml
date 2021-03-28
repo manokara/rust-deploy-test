@@ -72,6 +72,10 @@ jobs:
     needs: [build_linux, build_mac, build_win]
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: repo
       - name: Get Linux build
         uses: actions/download-artifact@v1
         with:
@@ -89,6 +93,10 @@ jobs:
           path: dist_windows
       - name: Prepare archives
         run: |
+          cp -r repo/assets dist_linux
+          cp -r repo/assets dist_mac
+          cp -r repo/assets dist_windows
+
           tar -C dist_linux -Jcvf rust-deploy-test.linux.tar.bz2 .
           tar -C dist_mac -Jcvf rust-deploy-test.macos.tar.bz2 .
           cd dist_windows
